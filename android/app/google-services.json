@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "922926870096",
+    "firebase_url": "https://react-native-d74cb.firebaseio.com",
+    "project_id": "react-native-d74cb",
+    "storage_bucket": "react-native-d74cb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922926870096:android:cfe6766ba63b61e0832b55",
+        "android_client_info": {
+          "package_name": "com.clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922926870096-d6pmv50gb4gv5kmhl4mhnjeiesvr5m57.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLCkiTSpqvs_MCfJtgtwajIED7HF_AV1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922926870096-d6pmv50gb4gv5kmhl4mhnjeiesvr5m57.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
