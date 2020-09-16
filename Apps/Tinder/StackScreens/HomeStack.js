@@ -7,6 +7,7 @@ import Profile from '../Profile/Profile';
 import Chats from '../Chat/Chats';
 import Chat from '../Chat/Chat';
 import EditInfo from '../Profile/EditInfo';
+import Settings from '../Profile/Settings';
 
 const Stack = createStackNavigator();
 const HomeStack = () => {
@@ -26,6 +27,11 @@ const HomeStack = () => {
       <Stack.Screen
         name="Editinfo"
         component={EditInfo}
+        options={{title: 'Edit'}}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={Settings}
         options={{title: 'Edit'}}
       />
       <Stack.Screen name="Chats" component={Chats} />

@@ -65,7 +65,7 @@ const Signup = ({navigation}) => {
         .then((authUser) => {
           return authUser.user.updateProfile({
             displayName: fullName,
-            photoURL: image,
+            // photoURL: image,
           });
         })
         .then(() => {

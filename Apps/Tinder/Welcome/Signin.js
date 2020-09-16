@@ -1,11 +1,9 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Alert,
-  SafeAreaView,
-  TouchableHighlight,
   TouchableOpacity,
   TextInput,
   Animated,
@@ -15,12 +13,10 @@ import {Button, ActivityIndicator} from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 
 import colors from '../../../assets/config/colors';
-// import Animated from 'react-native-reanimated';
 
 const Signin = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState('');
   const [isValid, setValid] = useState(true);
   const [spinner, setSpinner] = useState(false);

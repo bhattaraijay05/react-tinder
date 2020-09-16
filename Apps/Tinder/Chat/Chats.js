@@ -1,13 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import auth from '@react-native-firebase/auth';
 import colors from '../../../assets/config/colors';
 
 const Chats = ({navigation}) => {
+  const [boxColor, setBoxColor] = useState('#C39B77');
+  const navigateToChat = () => {
+    navigation.navigate('Chat'), setBoxColor('transparent');
+  };
   return (
     <View>
       <TouchableOpacity
-        onPress={() => navigation.navigate('Chat')}
-        style={styles.messageBox}>
+        onPress={navigateToChat}
+        style={[styles.messageBox, {backgroundColor: `${boxColor}`}]}>
         <View style={{marginHorizontal: 10}}>
           <Image
             style={{width: 46, height: 46, borderRadius: 20, margin: 0}}
@@ -21,7 +26,7 @@ const Chats = ({navigation}) => {
         <View>
           <View style={{flexDirection: 'row'}}>
             <Text style={{fontSize: 16, color: colors.chats__nameColor}}>
-              Anonymous
+              Tinder Team
             </Text>
             <Text
               style={{
@@ -37,7 +42,7 @@ const Chats = ({navigation}) => {
               fontSize: 14,
               color: colors.chats__message,
             }}>
-            This is the message
+            Hi {auth().currentUser.displayName}, Thanks for joining our team.
           </Text>
         </View>
       </TouchableOpacity>

@@ -1,11 +1,12 @@
 export default {
   //Tinder color
-  crossButtonColor: 'red',
+  crossButtonColor: '#E5566D',
   lightingButtonColor: '#9f21ff',
-  greenHeartColor: '#56f74a',
+  greenHeartColor: '#4CCC93',
   yellowHeartColor: '#ffd24a',
-  starColor: '#1DA1F2',
+  starColor: '#3CA3FF',
   headerIconColor: '#1DA1F2',
+  home__header__message__icon: '#E5566D',
 
   //Splash Scren
   splashScreen__upperView: '#3498db',
@@ -33,6 +34,8 @@ export default {
   chat__chatBackgroundColor: '#ffa',
   // chat__messageSendIconBackgroundColor: '#5da676',
   chat__sendingMessageColor: 'white',
+  chat__message__time: '#888C8F',
+  refreshColor: '#aaa',
 
   //Card
   cards__image__text__name: '#888C8F',

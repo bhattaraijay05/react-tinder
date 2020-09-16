@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,10 +6,21 @@ import {
   Image,
   TextInput,
   ImageBackground,
+  Modal,
+  Vibration,
+  Alert,
+  RefreshControl,
+  FlatList,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {TouchableOpacity, ScrollView} from 'react-native-gesture-handler';
+import db, {firebase} from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import {Button} from 'react-native-paper';
+
 import colors from '../../../assets/config/colors';
+import ChatMessages from './ChatMessages';
 
 const image = {
   uri:
@@ -18,51 +29,72 @@ const image = {
 
 const Chat = () => {
   const [text, setText] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const screenHeight = Dimensions.get('window').height;
+  useEffect(() => {
+    const send = db()
+      .collection('messages')
+      .orderBy('timestamp', 'desc')
+      .onSnapshot((snapshot) => {
+        setMessages(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            fullName: doc.data().fullName,
+            message: doc.data().message,
+            timestamp: doc.data().timestamp,
+          })),
+        );
+      });
+    return () => {
+      send();
+    };
+  }, []);
+
+  const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+
+  const sendMessage = () => {
+    db().collection('messages').add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      message: text,
+      fullName: auth().currentUser.displayName,
+    });
+    setText('');
+  };
+
   return (
     <ImageBackground source={image} style={styles.container}>
-      <ScrollView>
-        <TouchableOpacity style={styles.messages__left}>
-          <>
-            <Image
-              style={styles.message__icon}
-              source={{
-                uri: `https://source.unsplash.com/1600x900/?nature,water`,
-              }}
-            />
-            <View style={styles.incomingMessage}>
-              <Text>
-                Hello WOrld asdf asd fasd fasd fsd fsadfasd fasd fsadfHello
-                WOrld asdf asd fasd fasd fsd fsadfasd fasd fsadfHello WOrld asdf
-                asd fasd fasd fsd fsadfasd fasd fsadfHello WOrld asdf asd fasd
-                fasd fsd fsadfasd fasd fsadf
-              </Text>
-            </View>
-          </>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.messages__right}>
-          <View style={styles.sendingMessage}>
-            <Text>
-              Hello WOrld asdf asd fasd fasd fsd fsadfasd fasd fsadfHello WOrld
-              asdf asd fasd fasd fsd fsadfasd fasd fsadfHello WOrld asdf asd
-              fasd fasd fsd fsadfasd fasd fsadfHello WOrld asdf asd fasd fasd
-              fsd fsadfasd fasd fsadf
-            </Text>
-          </View>
-          <Image
-            style={styles.message__icon}
-            source={{
-              uri: `https://source.unsplash.com/1600x900/?nature,water`,
-            }}
+      <FlatList
+        inverted={true}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={messages.length}
+        data={messages}
+        renderItem={({item}) => (
+          <ChatMessages
+            key={item.id}
+            id={item.id}
+            message={item.message}
+            name={item.fullName}
+            messageTime={new Date(item.timestamp?.toDate()).toLocaleString()}
           />
-        </TouchableOpacity>
-      </ScrollView>
+        )}
+        keyExtractor={(item) => item.id}
+      />
       <View style={styles.chatInput}>
         <TextInput
           style={styles.textInput}
           value={text}
           onChangeText={(text) => setText(text)}
         />
-        <TouchableOpacity style={styles.sendIcon}>
+        <TouchableOpacity style={styles.sendIcon} onPress={sendMessage}>
           <Icon
             name="send"
             color={colors.chat__messageSendIconColor}
@@ -84,14 +116,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop: 'auto',
     marginBottom: 5,
-  },
-  incomingMessage: {
-    backgroundColor: colors.chat__incomingMessageColor,
-    borderRadius: 10,
-    width: 270,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
   },
   messages__left: {
     display: 'flex',
@@ -126,14 +150,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
   },
-
   sendingMessage: {
-    backgroundColor: colors.chat__sendingMessageColor,
+    backgroundColor: colors.chat__incomingMessageColor,
     borderRadius: 10,
-    width: 270,
+    maxWidth: '70%',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
+    bottom: 0,
+    marginTop: 'auto',
+  },
+  incomingMessage: {
+    backgroundColor: colors.chat__sendingMessageColor,
+    borderRadius: 10,
+    maxWidth: '70%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    bottom: 0,
+    marginTop: 'auto',
   },
   textInput: {
     backgroundColor: 'white',
@@ -142,5 +177,41 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
     padding: 10,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: '#F194FF',
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
